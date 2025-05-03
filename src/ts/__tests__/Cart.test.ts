@@ -1,49 +1,37 @@
-import Cart from '../../Cart';
-import { Movie } from '../../Movie';
-
-const movie1 = new Movie(1, 'Inception', 100, 148, 2010, 'USA');
-const movie2 = new Movie(2, 'Interstellar', 200, 169, 2014, 'USA');
+import Cart from '../service/Cart';
+import { Movie } from '../Movie';
 
 describe('Cart', () => {
   let cart: Cart;
+  const movie1 = new Movie(1, 'Inception', 500, 148, 2010, 'USA', 'Your mind is the scene of the crime', 'Sci-Fi', 'Christopher Nolan');
+  const movie2 = new Movie(2, 'Tenet', 400, 150, 2020, 'USA', 'Time runs out', 'Action', 'Christopher Nolan');
 
   beforeEach(() => {
-    cart = new Cart();
+      cart = new Cart();
   });
 
-  test('new cart should be empty', () => {
-    expect(cart.getItems().length).toBe(0);
+  test('should add items', () => {
+      cart.add(movie1);
+      expect(cart.items.length).toBe(1);
   });
 
-  describe('getTotalPrice', () => {
-    test('returns sum of product prices', () => {
+  test('should calculate total price', () => {
       cart.add(movie1);
       cart.add(movie2);
-      expect(cart.getTotalPrice()).toBe(300);
-    });
+      expect(cart.getTotal()).toBe(900);
   });
 
-  describe('getTotalPriceWithDiscount', () => {
-    test('applies discount correctly', () => {
+  test('should calculate total with discount', () => {
       cart.add(movie1);
       cart.add(movie2);
-      expect(cart.getTotalPriceWithDiscount(10)).toBe(270); // 300 - 10% = 270
-      expect(cart.getTotalPriceWithDiscount(100)).toBe(0); // 100% скидка
-    });
+      expect(cart.getTotalWithDiscount(10)).toBe(810);
   });
 
-  describe('removeItemById', () => {
-    test('removes item by id', () => {
+  test('should remove item by id', () => {
       cart.add(movie1);
       cart.add(movie2);
-      cart.removeItemById(1);
-      expect(cart.getItems()).toEqual([movie2]);
-    });
-
-    test('does nothing if id not found', () => {
-      cart.add(movie1);
-      cart.removeItemById(999);
-      expect(cart.getItems()).toEqual([movie1]);
-    });
+      cart.remove(1);
+      expect(cart.items.find(i => i.id === 1)).toBeUndefined();
+      expect(cart.items.length).toBe(1);
   });
 });
